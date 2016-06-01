@@ -20,7 +20,7 @@ void clean(Mat src){
     Mat thr;
     cvtColor( src, thr, COLOR_BGR2GRAY ); //Convert to gray
     threshold( thr, thr, 125, 255, THRESH_BINARY ); //Threshold the gray
-    
+    Mat thr1 = thr.clone();
     vector<vector<Point> > contours; // Vector for storing contours
     
     findContours( thr, contours, RETR_CCOMP, CHAIN_APPROX_SIMPLE ); // Find the contours in the image
@@ -35,9 +35,10 @@ void clean(Mat src){
             largest_contour_index = i;               //Store the index of largest contour
             boundRect = boundingRect( contours[i] ); // Find the bounding rectangle for biggest contour
         }
+        
     };
     Mat roi = src(boundRect);
-    cv::imwrite(  "o78.jpg",roi );
+    cv::imwrite("o78.jpg",roi);
     vector<Point>approx , outapprox , outapprox2;
     cv::approxPolyDP(contours[largest_contour_index],approx, 300, true );//get the largest contour with 4 vertices
     for (int h = 0; h<approx.size(); h++) {
@@ -92,12 +93,15 @@ void clean(Mat src){
     Mat dst;
     cvtColor(transformed, dst, CV_BGR2GRAY);
     cv::adaptiveThreshold(dst,dst,255,ADAPTIVE_THRESH_GAUSSIAN_C,CV_THRESH_BINARY,15,5);
-    cv::imwrite(  "o77.jpg",dst );
+    cv::imwrite(  "o80.jpg",transformed);
     //    cout<<boundRect.tl()<<endl;
     //    cout<<boundRect.br()<<endl;
     
+//    for (int y =0; y<contours.size(); y++) {
+//        drawContours( src , contours,y, Scalar( 0, 255, 0 ), 2 );
+//    }
     drawContours( src , contours,largest_contour_index, Scalar( 0, 255, 0 ), 2 ); // Draw the largest contour using previously stored index.
-    //cv::imwrite(  "o77.jpg",src );
+    cv::imwrite(  "o77.jpg",src );
     
     //return 0;
 
@@ -109,12 +113,15 @@ Mat boundingbox (Mat src){
     Rect boundRect ;
     
     Mat thr;
+    //cv::Mat gs_bgr(color.size(), CV_8UC1);
+    //cv::cvtColor(color, gs_bgr, CV_BGR2GRAY);
     cvtColor( src, thr, COLOR_BGR2GRAY ); //Convert to gray
+    imwrite("thr.jpg", thr);
     threshold( thr, thr, 125, 255, THRESH_BINARY ); //Threshold the gray
-    
+    imwrite("thresholded.jpg", thr);
     vector<vector<Point> > contours; // Vector for storing contours
     
-    findContours( thr, contours, RETR_CCOMP, CHAIN_APPROX_SIMPLE ); // Find the contours in the image
+    findContours( thr, contours, RETR_EXTERNAL, CHAIN_APPROX_SIMPLE ); // Find the contours in the image
     
     for( size_t i = 0; i< contours.size(); i++ ) // iterate through each contour.
     {
@@ -198,7 +205,7 @@ int main( int argc, char** argv )
 //        cout<<"Make sure that your are getting 4 corner using approxPolyDP..."<<endl;
     using namespace std;
     using namespace cv;
-    Mat src = imread( "84.JPG" );
+    Mat src = imread( "98.JPG" );
     Mat src1  = boundingbox(src);
     clean(src1);
 //    int largest_area=0;
